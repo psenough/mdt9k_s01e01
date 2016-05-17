@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+ <head>
+ 	<title>MDT9K s01e01</title>
+ 	<meta charset='utf-8'>
+	<link rel="shortcut icon" type="image/png" href="favicon.png"/>
+	<style>
+	
+	* {
+		margin: 0px;
+		padding: 0px;
+		overflow: hidden;
+	}
+
+ 	@font-face {
+		font-family: 'AMIGAHH';
+		src: url('P0T-NOoDLE_v1.0.ttf') format('truetype');
+		font-weight: normal;
+		font-style: normal;
+	}
+
+	body {
+		background: black;
+	}
+	
+ 	.aligncenter {
+ 		position: absolute;
+ 		top: 0px;
+ 		width: 100%;
+ 		text-align: center;
+ 		margin: auto;
+ 	}
+	
+	#message {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		font-family: 'AMIGAHH', cursive;
+		color: white;
+		width: 100%;
+		height: 100%;
+		margin: auto;
+		text-align: center;
+		font-size: 2em;
+		overflow-y: hidden;
+		text-shadow: 2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000, 0 -2px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+		/*text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;*/
+		line-height: 2em;
+		z-index: 21;
+	}
+	
+	#message span {
+		position: relative;
+		top: 70%;
+		font-size:1.5em;
+	}
+	
+	a:link, a:visited, a:hover, a:active {
+		color: white;
+	}
+
+ 	</style>
+	<script src="requestanimationframe.js"></script>
+	<!-- gasman's cowbell using libopenmpt.js -->
+	<script src="cowbell.min.js"></script>
+	<script src="openmpt.min.js"></script>
+  	<script type="application/javascript">
+
+rand = function(n){
+	return Math.floor(Math.random()*n);
+};
+
+function init() {
+	var audioPlayer = new Cowbell.Player.Audio();
+	var modPlayer = new Cowbell.Player.OpenMPT({
+		'pathToLibOpenMPT': 'libopenmpt.js'
+	});
+	var track = new modPlayer.Track('red_flourish_glow.mod'); <!-- by azazel/tbl -->
+	var audioElement = track.open();
+	audioElement.play();
+	
+	drawCanvas();
+}
+
+var w;
+var h;
+var ctx;
+var halfw;
+var halfh;
+
+function drawCanvas() {
+
+	resize();
+	loadLine('','');
+
+	var num = 20;
+	var parts = 5;
+	
+	ctx.fillStyle = "rgba(40,80,80,1.0)";
+	ctx.fillRect(0,0,w,h);
+	
+	
+	function drawThis() {
+		
+		var d2 = new Date();
+		var n2 = d2.getTime(); 
+		
+		var sin1 = Math.sin((n2-n)/200)+1.0;
+		var sin2 = Math.sin((n2-n)/800)+1.0;
+		var cos1 = Math.cos((n2-n)/800)+1.0;
+		var cos2 = Math.cos((n2-n)/800);
+		var cos3 = Math.cos((n2-n)/1600);
+		var cos4 = Math.cos((n2-n)/5711);
+		
+		//var gray = parseInt(155*cos2+100,10);
+		ctx.fillStyle = "rgba(120,20,90,1.0)";
+		ctx.fillRect(0,0,w,h);
+		//if (rms > 0.45) ctx.fillStyle = "rgba(0,0,0,0.1)";
+		//ctx.fillRect(0,0,w,h);
+		
+		var flip = Math.sin(sin1*cos1*cos3);
+		
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = "rgba(255,255,255,0.4)";
+		ctx.save();
+		ctx.translate(w*(1.0+cos3*0.5)*.5,h*.5);
+		ctx.rotate((n2-n)*0.01);
+		for (var k=0; k < parts; k++) {
+			for(var i=0; i<num; i++) {
+				var sizex = i*(4+cos2*20);
+				var sizey = i*(4+cos2*30);
+				ctx.beginPath();
+				ctx.moveTo(sizex+sin2*120, sizey+cos4*100);
+				ctx.lineTo(sizex, sizey);
+				ctx.closePath();
+				ctx.stroke();
+			}
+			ctx.rotate(Math.PI*(2/parts));
+		}
+		ctx.restore();
+		
+		ctx.save();
+		ctx.translate(w*(1.0-cos3*0.5)*.5,h*.5);
+		ctx.rotate(-(n2-n)*0.01);
+		for (var k=0; k < parts; k++) {
+			for(var i=0; i<num; i++) {
+				var sizex = i*(4+cos2*20);
+				var sizey = i*(4+cos2*30);
+				//ctx.save();
+				ctx.beginPath();
+				ctx.moveTo(sizex+sin2*120, sizey+cos4*100);
+				ctx.lineTo(sizex, sizey);
+				ctx.closePath();
+				ctx.stroke();
+			}
+			ctx.rotate(Math.PI*(2/parts));
+		}
+		ctx.restore();	
+	}
+	
+	requestAnimationFrame( animate );
+	
+	var d = new Date();
+	var n = d.getTime();
+	var repeater = n;
+	var rperiod = 7000;
+	var index = 0;
+
+	function animate() {
+		requestAnimationFrame( animate );
+		drawThis();
+		
+		var dom = document.getElementById('message');
+		if (dom) {
+			var d2 = new Date();
+			var n2 = d2.getTime(); 
+			if (((n2-n) > 6500) && (n2-repeater) > rperiod) {
+				repeater = n2;
+				loadLine('',words[index++]);
+				if (index >= words.length) index = 0;
+			}
+		}
+	}
+}
+
+window.onresize = resize;
+
+function resize() {
+	w = window.innerWidth;
+	h = window.innerHeight;
+	
+	var canvas = document.getElementById("canvas");
+	canvas.setAttribute("width", w);
+	canvas.setAttribute("height", h);
+	
+	ctx = canvas.getContext("2d");
+	ctx.width = w;
+	ctx.height = h;
+	halfw = w*.5;
+	halfh = h*.5;
+}
+
+function loadLine(thisclass, thistext) {
+	var content = '';
+	content += '<span class="'+thisclass+'">'+thistext+'</span><br />';
+	document.getElementById('message').innerHTML = content;
+}
+
+var words = [
+"The Magnificent International Association Of Extremely Retarded Idiots Corp. GmbH ry Interactive Studios",
+"invites you to join us live on the internets",
+"for 1 hour of scene talk<br>with ps, visy & friends",
+"covering demoscene releases of April 2016,<br>news and upcoming parties",
+"Thursday, 19th of May 2016<br><a href=\"http://time.is/CET\" target=\"_blank\">2100 CET</a>",
+"Mystery Demoscene Theater 9000<br>Season 1, Episode 1",
+"<a href=\"http://twitch.tv/psenough\" target=\"_blank\">http://twitch.tv/psenough</a>",
+"",
+"greetings to accession only",
+"",
+"code: ps<br>music: Azazel<br>player: cowbell & openmpt",
+"",
+"(text looping...)"
+];
+    
+  </script>
+ </head>
+ <body onload="init()">
+ 	<div class="aligncenter">
+   		<canvas id="canvas" width="800" height="600"></canvas>
+   		<div id="message">titanics cruncher decrunches while loading...</div>
+   	</div>
+ </body>
+</html>
