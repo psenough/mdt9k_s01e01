@@ -55,6 +55,24 @@
 		font-size:1.5em;
 	}
 	
+	#countdown {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		font-family: 'AMIGAHH', cursive;
+		color: white;
+		width: 100%;
+		height: 100%;
+		margin: auto;
+		text-align: center;
+		font-size: 2em;
+		overflow-y: hidden;
+		text-shadow: 2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000, 0 -2px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+		/*text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;*/
+		line-height: 2em;
+		z-index: 21;
+	}
+	
 	a:link, a:visited, a:hover, a:active {
 		color: white;
 	}
@@ -180,6 +198,10 @@ function drawCanvas() {
 				if (index >= words.length) index = 0;
 			}
 		}
+		var dom2 = document.getElementById('countdown');
+		if (dom2) {
+			dom2.innerHTML = getDiff();
+		}
 	}
 }
 
@@ -221,13 +243,35 @@ var words = [
 "",
 "(text looping...)"
 ];
-    
+
+function getDiff() {
+	var output = '';
+	var date1 = new Date();
+	var date2 = new Date(2016, 5, 19, 21, 0, 0, 0);
+	var diff = new Date(date2.getTime() - date1.getTime());
+	var seconds = diff.getSeconds();
+	var minutes = diff.getMinutes();
+	var hours = diff.getHours();
+	var days = diff.getDate()-1;
+	if (days < 30) {
+		if (days > 0) output += days + ' days ';
+		if (hours > 0) output += hours + ' hours ';
+		if (minutes > 0) output += minutes + ' minutes ';
+		if (seconds > 0) output += seconds + ' seconds ';
+		output += 'till showtime';
+	} else {
+		output = 'live now at <a href=\"http://twitch.tv/psenough\">http://twitch.tv/psenough</a>';
+	}
+	return output;
+}
+
   </script>
  </head>
  <body onload="init()">
  	<div class="aligncenter">
    		<canvas id="canvas" width="800" height="600"></canvas>
    		<div id="message">titanics cruncher decrunches while loading...</div>
+		<div id="countdown"></div>
    	</div>
  </body>
 </html>
